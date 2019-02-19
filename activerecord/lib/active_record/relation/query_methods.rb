@@ -1162,12 +1162,12 @@ module ActiveRecord
               Arel.sql(connection.quote_table_name(field))
             }.asc
           when Hash
-            arg.map { |field, dir|
-              case field
+            arg.map { |_field, dir|
+              case _field
               when Arel::Nodes::SqlLiteral
-                field.send(dir.downcase)
+                _field.send(dir.downcase)
               else
-                field = field.to_s
+                field = _field.to_s
                 arel_column(field) {
                   Arel.sql(connection.quote_table_name(field))
                 }.send(dir.downcase)
