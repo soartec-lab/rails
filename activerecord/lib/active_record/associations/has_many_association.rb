@@ -94,17 +94,6 @@ module ActiveRecord
           count
         end
 
-        # Deletes the records according to the <tt>:dependent</tt> option.
-        def delete_records(records, method)
-          if method == :destroy
-            records.each(&:destroy!)
-            update_counter(-records.length) unless reflection.inverse_updates_counter_cache?
-          else
-            scope = self.scope.where(reflection.klass.primary_key => records)
-            update_counter(-delete_count(method, scope))
-          end
-        end
-
         def concat_records(records, *)
           update_counter_if_success(super, records.length)
         end
