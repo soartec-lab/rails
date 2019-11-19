@@ -501,6 +501,22 @@ class HasAndBelongsToManyAssociationsTest < ActiveRecord::TestCase
     assert_empty david.projects.reload
   end
 
+  def test_destroy_all!
+    david = Developer.find(1)
+    david.projects.reload
+    assert_not_empty david.projects
+
+    assert_no_difference "Project.count" do
+      david.projects.destroy_all!
+    end
+
+    join_records = Developer.connection.select_all("SELECT * FROM developers_projects WHERE developer_id = #{david.id}")
+    assert_empty join_records
+
+    assert_empty david.projects
+    assert_empty david.projects.reload
+  end
+
   def test_destroy_associations_destroys_multiple_associations
     george = parrots(:george)
     assert_not_empty george.pirates
