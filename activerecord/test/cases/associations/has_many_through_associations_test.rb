@@ -436,6 +436,14 @@ class HasManyThroughAssociationsTest < ActiveRecord::TestCase
     assert_nil people.first
   end
 
+  def test_destroy_all_bang_on_association_clears_scope
+    post = Post.create!(title: "Rails 6", body: "")
+    people = post.people
+    people.create!(first_name: "Jeb")
+    people.destroy_all!
+    assert_nil people.first
+  end
+
   def test_destroy_on_association_clears_scope
     post = Post.create!(title: "Rails 6", body: "")
     people = post.people
