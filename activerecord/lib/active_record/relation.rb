@@ -547,6 +547,10 @@ module ActiveRecord
       records.each(&:destroy).tap { reset }
     end
 
+    def destroy_all!
+      records.each(&:destroy!).tap { reset }
+    end
+
     # Deletes the records without instantiating the records
     # first, and hence not calling the {#destroy}[rdoc-ref:Persistence#destroy]
     # method nor invoking callbacks.
