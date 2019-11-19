@@ -1747,6 +1747,36 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
     assert_equal 0, category.categorizations.count
   end
 
+  def test_destroy_all!
+    force_signal37_to_load_all_clients_of_firm
+
+    assert_predicate companies(:first_firm).clients_of_firm, :loaded?
+
+    clients = companies(:first_firm).clients_of_firm.to_a
+    assert_not clients.empty?, "37signals has clients after load"
+    destroyed = companies(:first_firm).clients_of_firm.destroy_all!
+    assert_equal clients.sort_by(&:id), destroyed.sort_by(&:id)
+    assert destroyed.all?(&:frozen?), "destroyed clients should be frozen"
+    assert companies(:first_firm).clients_of_firm.empty?, "37signals has no clients after destroy all"
+    assert companies(:first_firm).clients_of_firm.reload.empty?, "37signals has no clients after destroy all and refresh"
+  end
+
+  def test_destroy_all_bang_on_association_clears_scope
+    author = Author.create!(name: "Gannon")
+    posts = author.posts
+    posts.create!(title: "test", body: "body")
+    posts.destroy_all!
+    assert_nil posts.first
+  end
+
+  def test_destroy_all_bang_on_desynced_counter_cache_association
+    category = categories(:general)
+    assert_operator category.categorizations.count, :>, 0
+
+    category.categorizations.destroy_all!
+    assert_equal 0, category.categorizations.count
+  end
+
   def test_destroy_on_association_clears_scope
     author = Author.create!(name: "Gannon")
     posts = author.posts
@@ -2942,6 +2972,14 @@ class HasManyAssociationsTest < ActiveRecord::TestCase
   def test_destroy_with_bang_bubbles_errors_from_associations
     error = assert_raises ActiveRecord::RecordNotDestroyed do
       AuthorWithErrorDestroyingAssociation.first.destroy!
+    end
+
+    assert_instance_of PostWithErrorDestroying, error.record
+  end
+
+  def test_destroy_all_with_bang_bubbles_errors_from_associations
+    error = assert_raises ActiveRecord::RecordNotDestroyed do
+      AuthorWithErrorDestroyingAssociation.destroy_all!
     end
 
     assert_instance_of PostWithErrorDestroying, error.record
