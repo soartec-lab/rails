@@ -506,7 +506,7 @@ class HasAndBelongsToManyAssociationsTest < ActiveRecord::TestCase
     david.projects.reload
     assert_not_empty david.projects
 
-    assert_no_difference "Project.count" do
+    assert_difference "Project.count", -2 do
       david.projects.destroy_all!
     end
 
