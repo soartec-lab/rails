@@ -428,6 +428,17 @@ class HasManyThroughAssociationsTest < ActiveRecord::TestCase
     assert_empty posts(:welcome).people.reload
   end
 
+  def test_destroy_all!
+    assert_no_difference "Person.count" do
+      assert_difference "Reader.count", -1 do
+        posts(:welcome).people.destroy_all!
+      end
+    end
+
+    assert_empty posts(:welcome).reload.people
+    assert_empty posts(:welcome).people.reload
+  end
+
   def test_destroy_all_on_association_clears_scope
     post = Post.create!(title: "Rails 6", body: "")
     people = post.people
