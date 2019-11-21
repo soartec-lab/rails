@@ -9,7 +9,7 @@ require "models/toy"
 class CallbackCancellationAuthor < ActiveRecord::Base
   self.table_name = 'authors'
 
-  before_destroy { false }
+  before_destroy { throw :abort }
 end
 
 class DeleteAllTest < ActiveRecord::TestCase
