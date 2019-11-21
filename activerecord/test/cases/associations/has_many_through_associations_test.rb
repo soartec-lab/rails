@@ -430,7 +430,7 @@ class HasManyThroughAssociationsTest < ActiveRecord::TestCase
 
   def test_destroy_all!
     assert_no_difference "Person.count" do
-      assert_difference "Reader.count", -1 do
+      assert_no_difference "Reader.count" do
         posts(:welcome).people.destroy_all!
       end
     end
